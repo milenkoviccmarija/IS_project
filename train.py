@@ -1,18 +1,12 @@
 from ultralytics import YOLO
 
+model = YOLO("yolov8n.pt")
 
-def main() -> None:
-    model = YOLO("yolov8n.yaml")
-
-    model.train(
-        data="data.yaml",
-        epochs=30,
-        imgsz=640,
-        batch=8,
-        project="outputs",
-        name="dog_training",
-    )
-
-
-if __name__ == "__main__":
-    main()
+model.train(
+    data="roboflow_dataset/data.yaml",
+    epochs=50,
+    imgsz=512,
+    project="runs",
+    name="marija_masa_model",
+    exist_ok=True
+)

@@ -1,27 +1,15 @@
-from pathlib import Path
+from ultralytics import YOLO
 
-import pandas as pd
+MODEL_PATH = "runs/marija_masa_model/weights/best.pt"
+DATA_PATH = "roboflow_dataset/data.yaml"
 
+model = YOLO(MODEL_PATH)
 
-RESULTS_PATH = Path("outputs/dog_detections.csv")
+metrics = model.val(
+    data=DATA_PATH,
+    split="test",
+    imgsz=512
+)
 
-
-def main() -> None:
-
-    if not RESULTS_PATH.exists():
-        print("Ne postoji CSV sa rezultatima.")
-        return
-
-    df = pd.read_csv(RESULTS_PATH)
-
-    print(df.head())
-
-    print("\nUkupan broj detekcija:")
-    print(len(df))
-
-    print("\nProsečan confidence:")
-    print(df["confidence"].mean())
-
-
-if __name__ == "__main__":
-    main()
+print("Evaluacija završena.")
+print(metrics)
