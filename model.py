@@ -4,12 +4,6 @@ from ultralytics import YOLO
 
 
 def create_model(model_yaml: str = "yolov8n.yaml") -> YOLO:
-    """
-    Kreira YOLO model za detekciju objekata.
-
-    Za razliku od rucno pisanog PyTorch CNN/MLP modela, YOLO arhitekturu
-    definise Ultralytics biblioteka na osnovu YAML konfiguracije.
-    """
     return YOLO(model_yaml)
 
 

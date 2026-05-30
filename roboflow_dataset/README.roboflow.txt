@@ -1,8 +1,8 @@
 
-is - v1 2026-05-25 12:13pm
+is - v7 final
 ==============================
 
-This dataset was exported via roboflow.com on May 25, 2026 at 10:15 AM GMT
+This dataset was exported via roboflow.com on May 30, 2026 at 4:01 PM GMT
 
 Roboflow is an end-to-end computer vision platform that helps you
 * collaborate with your team on computer vision projects
@@ -17,7 +17,7 @@ visit https://github.com/roboflow/notebooks
 
 To find over 100k other datasets and pre-trained models, visit https://universe.roboflow.com
 
-The dataset includes 100 images.
+The dataset includes 331 images.
 Is are annotated in YOLOv8 format.
 
 The following pre-processing was applied to each image:

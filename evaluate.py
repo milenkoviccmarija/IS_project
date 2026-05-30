@@ -26,12 +26,7 @@ def best_model_path(config: Config) -> Path:
 
 
 def run_evaluation(config: Config, split: str | None = None):
-    """
-    Pokrece YOLO evaluaciju na validacionom ili test skupu.
 
-    YOLO ne vraca klasicne classification_report metrike, jer radi detekciju
-    objekata. Zato se koriste mAP, precision i recall.
-    """
     model = load_model(best_model_path(config))
 
     return model.val(
@@ -90,9 +85,7 @@ def plot_training_curves(history: pd.DataFrame, title: str = "") -> plt.Figure:
 
 
 def plot_confusion_matrix(config: Config) -> plt.Figure:
-    """
-    Prikazuje matricu konfuzije koju Ultralytics automatski sacuva nakon treninga.
-    """
+
     image_path = resolve_project_path(config.project) / config.name / "confusion_matrix.png"
     image = plt.imread(image_path)
 
