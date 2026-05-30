@@ -43,7 +43,77 @@ def resolve_device(preference: str = "auto") -> str:
     return "cpu"
 
 
+def check_dataset(config: Config) -> None:
+    dataset_config = load_dataset_config(config.data_yaml)
+    errors = []
+    required_splits = ("train", config.val_split, config.test_split)
+    class_count = int(dataset_config.get("nc", len(dataset_config.get("names", []))))
+
+    for split in required_splits:
+        if split not in dataset_config:
+            errors.append(f"Split '{split}' ne postoji u data.yaml.")
+            continue
+
+        images_dir = split_image_dir(dataset_config, split, config.data_yaml)
+        labels_dir = split_label_dir(dataset_config, split, config.data_yaml)
+
+        if not images_dir.exists():
+            errors.append(f"Folder sa slikama ne postoji za '{split}': {images_dir}")
+            continue
+
+        if not labels_dir.exists():
+            errors.append(f"Folder sa labelama ne postoji za '{split}': {labels_dir}")
+            continue
+
+        image_paths = list_images(images_dir)
+        if not image_paths:
+            errors.append(f"Split '{split}' nema nijednu sliku.")
+
+        for image_path in image_paths:
+            label_path = labels_dir / f"{image_path.stem}.txt"
+            if not label_path.exists():
+                errors.append(f"Nedostaje label fajl za sliku: {image_path}")
+                continue
+
+            for line_number, line in enumerate(label_path.read_text().splitlines(), start=1):
+                if not line.strip():
+                    continue
+
+                parts = line.split()
+                if len(parts) != 5:
+                    errors.append(f"Los format labele u {label_path}:{line_number}")
+                    continue
+
+                try:
+                    class_id = int(float(parts[0]))
+                    coordinates = [float(value) for value in parts[1:]]
+                except ValueError:
+                    errors.append(f"Labela nije broj u {label_path}:{line_number}")
+                    continue
+
+                if not 0 <= class_id < class_count:
+                    errors.append(f"Nepostojeca klasa {class_id} u {label_path}:{line_number}")
+
+                if any(value < 0 or value > 1 for value in coordinates):
+                    errors.append(f"Koordinate nisu normalizovane u {label_path}:{line_number}")
+
+    if errors:
+        preview = "\n".join(f"- {error}" for error in errors[:20])
+        extra = f"\n... i jos {len(errors) - 20} problema." if len(errors) > 20 else ""
+        raise ValueError(f"Dataset provera nije prosla:\n{preview}{extra}")
+
+    print("Dataset provera je prosla.")
+
+
 def train_yolo(config: Config, device: str):
+    if config.resume_training:
+        resume_path = Path(resolve_project_path(config.resume_weights))
+        if not resume_path.exists():
+            raise FileNotFoundError(f"Checkpoint za nastavak treninga ne postoji: {resume_path}")
+
+        model = load_model(resume_path)
+        return model.train(resume=True, device=device)
+
     model_path = config.model_yaml if config.train_from_scratch else config.pretrained_weights
     model = create_model(resolve_model_path(model_path))
 
@@ -63,33 +133,39 @@ def train_yolo(config: Config, device: str):
     )
 
 
-def validate_yolo(config: Config, weights_path: Path, device: str):
+def validate_yolo(config: Config, weights_path: Path, device: str, split: str | None = None, name_suffix: str = "validation"):
     model = load_model(weights_path)
 
     return model.val(
         data=resolve_project_path(config.data_yaml),
-        split=config.val_split,
+        split=split or config.val_split,
         imgsz=config.imgsz,
         batch=config.batch,
         device=device,
         project=resolve_project_path(config.project),
-        name=f"{config.name}_validation",
+        name=f"{config.name}_{name_suffix}",
         exist_ok=config.exist_ok,
         plots=True,
     )
 
 
-def print_validation_metrics(metrics) -> None:
+def detection_f1(metrics) -> float:
     precision = metrics.box.mp
     recall = metrics.box.mr
-    f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0
+    return 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0
 
-    print("Validacija zavrsena.")
+
+def print_detection_metrics(metrics, title: str) -> None:
+    print(f"{title} zavrsena.")
     print(f"mAP50: {metrics.box.map50:.4f}")
     print(f"mAP50-95: {metrics.box.map:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall:.4f}")
-    print(f"F1: {f1:.4f}")
+    print(f"Precision: {metrics.box.mp:.4f}")
+    print(f"Recall: {metrics.box.mr:.4f}")
+    print(f"F1: {detection_f1(metrics):.4f}")
+
+
+def print_validation_metrics(metrics) -> None:
+    print_detection_metrics(metrics, "Validacija")
 
 
 def yolo_label_to_xyxy(values: list[float], image_width: int, image_height: int) -> list[float]:
@@ -297,15 +373,75 @@ def find_validation_errors_by_epoch(config: Config, save_dir: Path, device: str)
     print(f"Kratak pregled po epohama sacuvan je u: {summary_path}")
 
 
+def metric_lines(title: str, metrics) -> list[str]:
+    return [
+        f"{title}:",
+        f"  mAP50: {metrics.box.map50:.4f}",
+        f"  mAP50-95: {metrics.box.map:.4f}",
+        f"  Precision: {metrics.box.mp:.4f}",
+        f"  Recall: {metrics.box.mr:.4f}",
+        f"  F1: {detection_f1(metrics):.4f}",
+    ]
+
+
+def write_training_summary(
+    config: Config,
+    save_dir: Path,
+    best_model: Path,
+    last_model: Path,
+    device: str,
+    validation_metrics,
+    test_metrics,
+) -> None:
+    model_path = config.resume_weights if config.resume_training else (
+        config.model_yaml if config.train_from_scratch else config.pretrained_weights
+    )
+    lines = [
+        "YOLO trening summary",
+        "",
+        f"Uredjaj: {device}",
+        f"Dataset: {config.data_yaml}",
+        f"Model: {model_path}",
+        f"Treniranje od nule: {config.train_from_scratch}",
+        f"Resume trening: {config.resume_training}",
+        f"Epohe: {config.epochs}",
+        f"Velicina slike: {config.imgsz}",
+        f"Batch: {config.batch}",
+        f"Patience: {config.patience}",
+        f"Seed: {config.seed}",
+        "",
+        f"Rezultati folder: {save_dir}",
+        f"Najbolji model: {best_model}",
+        f"Poslednji model: {last_model}",
+        "",
+        *metric_lines("Validacija", validation_metrics),
+        "",
+        *metric_lines("Test", test_metrics),
+    ]
+
+    summary_path = save_dir / "training_summary.txt"
+    summary_path.write_text("\n".join(lines) + "\n")
+    print(f"Summary treninga sacuvan je u: {summary_path}")
+
+
 def main() -> None:
     config = Config()
     device = resolve_device()
-    model_description = "prazna YOLO arhitektura" if config.train_from_scratch else "pretrained YOLO model"
+    if config.resume_training:
+        model_description = f"nastavak treninga iz {config.resume_weights}"
+    else:
+        model_description = "prazna YOLO arhitektura" if config.train_from_scratch else "pretrained YOLO model"
 
     print(f"Uredjaj: {device}")
     print(f"Model: {config.model_yaml} ({model_description})")
     print(f"Dataset: {config.data_yaml}")
-    print("Pokrecem treniranje od nule...")
+    print("Proveravam dataset pre treninga...")
+    check_dataset(config)
+
+    if config.resume_training:
+        print("Nastavljam prekinuti trening...")
+    else:
+        print("Pokrecem treniranje od nule...")
 
     results = train_yolo(config, device)
 
@@ -318,8 +454,12 @@ def main() -> None:
     print(f"Poslednji model: {last_model}")
     print("Pokrecem validaciju najboljeg modela...")
 
-    metrics = validate_yolo(config, best_model, device)
-    print_validation_metrics(metrics)
+    validation_metrics = validate_yolo(config, best_model, device)
+    print_validation_metrics(validation_metrics)
+    print("Pokrecem test evaluaciju najboljeg modela...")
+    test_metrics = validate_yolo(config, best_model, device, split=config.test_split, name_suffix="test")
+    print_detection_metrics(test_metrics, "Test evaluacija")
+    write_training_summary(config, save_dir, best_model, last_model, device, validation_metrics, test_metrics)
     find_validation_errors(config, best_model, device, save_dir)
     find_validation_errors_by_epoch(config, save_dir, device)
 

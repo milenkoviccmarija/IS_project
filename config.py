@@ -19,6 +19,8 @@ class Config:
     patience: int = 10
     seed: int = 42
     save_period: int = 1
+    resume_training: bool = False
+    resume_weights: str = "runs/marija_masa_model/weights/last.pt"
 
     # Validacija i evaluacija
     val_split: str = "val"
