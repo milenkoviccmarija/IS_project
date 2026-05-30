@@ -18,10 +18,14 @@ class Config:
     batch: int = 8
     patience: int = 10
     seed: int = 42
+    save_period: int = 1
 
     # Validacija i evaluacija
     val_split: str = "val"
     test_split: str = "test"
+    error_conf_threshold: float = 0.25
+    error_iou_threshold: float = 0.5
+    track_epoch_errors: bool = True
 
     # Cuvanje rezultata
     project: str = "runs"
