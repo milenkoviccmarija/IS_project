@@ -1,0 +1,149 @@
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/02bcfb7c-b4a6-4c55-a41d-8f62fd524498_JPG.rf.abc127421e011008e7e5d42c6d8f72c5.jpg
+  - visak detekcija: 'masa' (conf=0.56)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/33f5ce48-c907-445f-bf68-ed1b3ff09c69_JPG.rf.4fc42c2de1714cd0a3b8441fc9e3142e.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/4dc07ee9-7016-40fa-95ab-ad9416df23aa_JPG.rf.d1d857492134e9edadc62cd7590fa350.jpg
+  - promasen objekat: ocekivano 'masa'
+  - promasen objekat: ocekivano 'marija'
+  - visak detekcija: 'marija' (conf=0.46)
+  - visak detekcija: 'masa' (conf=0.38)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/87bd0f8c-8f51-44f5-bddc-bae67414bb41_JPG.rf.7829b7c12e37ac7d1926f352800977a7.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/8a28ad75-30bc-4804-9712-6f608890c9e4_JPG.rf.364831fc2868cf627fbcca5ec3127502.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/D85AF552-3F4B-4E5B-B44D-15F457A83723_JPG.rf.39435bf60a97ce20a947c9643e601b82.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_0310_HEIC.rf.3925932ae7c194be54c59885092ea690.jpg
+  - pogresna klasa: ocekivano 'marija', dobijeno 'masa' (conf=0.44, IoU=0.76)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_0432_HEIC.rf.ed4263faee1b59b9cc6d6e61ab2b49da.jpg
+  - visak detekcija: 'marija' (conf=0.51)
+  - visak detekcija: 'masa' (conf=0.33)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_0994_HEIC.rf.66c36ffe84c11cf9b2c15a228e89f4a5.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.51, IoU=0.91)
+  - visak detekcija: 'masa' (conf=0.51)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1707_JPG.rf.371bab2f6565b6eb8cf952ed8c6eced6.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.68, IoU=0.89)
+  - visak detekcija: 'masa' (conf=0.50)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1710_JPG.rf.c7755673910df734df93010111642478.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.71, IoU=0.81)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1712_JPG.rf.2a4d0312ba76413b86842d37f13e46cd.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.56, IoU=0.90)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1717_JPG.rf.695e3b6faf5b6260c5c99c1a74d33dc7.jpg
+  - visak detekcija: 'masa' (conf=0.34)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1719_JPG.rf.2ea7443c755f8406148f4d9ca5773b57.jpg
+  - visak detekcija: 'marija' (conf=0.54)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_1737_HEIC.rf.146b6734d44e23eebf98c57198b0946b.jpg
+  - visak detekcija: 'masa' (conf=0.47)
+  - visak detekcija: 'masa' (conf=0.45)
+  - visak detekcija: 'masa' (conf=0.39)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_2690_HEIC.rf.92c70858c1a70d94afe7345d320fa712.jpg
+  - visak detekcija: 'marija' (conf=0.39)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_3031_HEIC.rf.37dd212f3869c0bb5ce213f7505c9687.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_3137_jpg.rf.7566009513626ce638b4ddee43afc9a4.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_3359_HEIC.rf.55ee2e6e07af822fc000fa3b887c0d72.jpg
+  - promasen objekat: ocekivano 'masa'
+  - visak detekcija: 'marija' (conf=0.32)
+  - visak detekcija: 'masa' (conf=0.31)
+  - visak detekcija: 'masa' (conf=0.29)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_4383_HEIC.rf.8374641ec8549178eba7c8190d745c32.jpg
+  - visak detekcija: 'marija' (conf=0.56)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_5894_HEIC.rf.736171e729d3b083c512175ed201580d.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_6426_HEIC.rf.8aa10baa810455700f64cf73f2e5c37d.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.64, IoU=0.67)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_7055_HEIC.rf.95d318030c910a022823d6048453f438.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_7833_HEIC.rf.1a79615e3f982cbb24b2f2989abfc43e.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.56, IoU=0.87)
+  - visak detekcija: 'masa' (conf=0.53)
+  - visak detekcija: 'marija' (conf=0.30)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_8003_HEIC.rf.9a085c2531424355ab1a991e38a31394.jpg
+  - visak detekcija: 'marija' (conf=0.60)
+  - visak detekcija: 'masa' (conf=0.35)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_8044_HEIC.rf.c32ccc30321ea8ef45b4596315d573e0.jpg
+  - visak detekcija: 'masa' (conf=0.56)
+  - visak detekcija: 'marija' (conf=0.25)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_8518_HEIC.rf.8384f8823ee63a9ca526890b0937cf08.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_9031_HEIC.rf.f30f1cecb451893bdc014ef14037a2fa.jpg
+  - pogresna klasa: ocekivano 'marija', dobijeno 'masa' (conf=0.42, IoU=0.90)
+  - visak detekcija: 'masa' (conf=0.64)
+  - visak detekcija: 'marija' (conf=0.58)
+  - visak detekcija: 'marija' (conf=0.51)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_9374_HEIC.rf.86d4d6eb65b5d300a8069718937e6a81.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.27, IoU=0.85)
+  - visak detekcija: 'masa' (conf=0.42)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_9404_HEIC.rf.9f0e60666e39bf2fb73e06b14b0174f7.jpg
+  - pogresna klasa: ocekivano 'marija', dobijeno 'masa' (conf=0.48, IoU=0.93)
+  - visak detekcija: 'marija' (conf=0.45)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/IMG_9584_HEIC.rf.98cdcd71b23cb31223a104b4b1e720e8.jpg
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.32, IoU=0.91)
+  - visak detekcija: 'masa' (conf=0.63)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/d6062d0a-b0f8-4b3c-be3a-1dbf738a2185_JPG.rf.1e95630da9ba4db25e41f13a06817c5f.jpg
+  - promasen objekat: ocekivano 'masa'
+  - visak detekcija: 'masa' (conf=0.32)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val13_jpg.rf.cd97bda6bfb2cfa4fe61fd50d68f038a.jpg
+  - promasen objekat: ocekivano 'marija'
+  - visak detekcija: 'masa' (conf=0.34)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val16_HEIC.rf.c58a90caef5a6c562d4a9b4bf672031b.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val1_JPG.rf.4fbe32c52fe8a20487f7109b6eb7d75e.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val20_jpeg.rf.9492d924d11e1e0306ca155e6188eaee.jpg
+  - visak detekcija: 'masa' (conf=0.51)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val2_jpg.rf.f36c1aed0d05300b7a8f22d4c9316ed6.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val3_jpg.rf.269b7dd7e123b90be0722e325d84444a.jpg
+  - promasen objekat: ocekivano 'marija'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val4_JPG.rf.dcd174ca86b57bba8fc0ba2a477d206e.jpg
+  - promasen objekat: ocekivano 'marija'
+  - pogresna klasa: ocekivano 'masa', dobijeno 'marija' (conf=0.40, IoU=0.88)
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val5_jpg.rf.7b7333113528c52bbec0137effd54eca.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val7_JPG.rf.92a41652035e086243aad55653d99bd4.jpg
+  - promasen objekat: ocekivano 'masa'
+
+/Users/macbookair/Desktop/IS/IS_project/roboflow_dataset/valid/images/marija_val9_JPG.rf.f7956a6c1604831a8c52c0bf8999661c.jpg
+  - visak detekcija: 'masa' (conf=0.25)

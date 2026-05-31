@@ -223,14 +223,15 @@ def collect_detection_errors(model, config: Config, image_paths: list[Path], lab
     error_count = 0
     images_with_errors = 0
 
-    for result in model.predict(
+    results = model.predict(
         source=[str(path) for path in image_paths],
         imgsz=config.imgsz,
         conf=config.error_conf_threshold,
         device=device,
         verbose=False,
-    ):
-        image_path = Path(result.path)
+    )
+
+    for image_path, result in zip(image_paths, results):
         label_path = labels_dir / f"{image_path.stem}.txt"
 
         with Image.open(image_path) as image:
@@ -315,6 +316,8 @@ def find_validation_errors(config: Config, weights_path: Path, device: str, save
     if report_lines:
         report_path.write_text("\n".join(report_lines))
         print(f"Pronadjeno gresaka: {error_count}")
+        print("Slike na kojima je model pogresio:")
+        print("\n".join(report_lines))
         print(f"Spisak slika sa greskama sacuvan je u: {report_path}")
     else:
         report_path.write_text("Nema pronadjenih gresaka na validacionom skupu.\n")

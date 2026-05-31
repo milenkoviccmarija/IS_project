@@ -54,12 +54,11 @@ def get_class_names(config: dict) -> list[str]:
 
 
 def get_dataset_root(config: dict, data_yaml: str | Path = "roboflow_dataset/data.yaml") -> Path:
-    dataset_path = Path(config["path"])
+    yaml_dir = resolve_path(data_yaml).parent
+    dataset_path = Path(config.get("path", yaml_dir.name))
 
     if dataset_path.is_absolute():
         return dataset_path
-
-    yaml_dir = resolve_path(data_yaml).parent
 
     if yaml_dir.name == dataset_path.name:
         return yaml_dir

@@ -1,0 +1,30 @@
+YOLO trening summary
+
+Uredjaj: mps
+Dataset: roboflow_dataset/data.yaml
+Model: yolov8n.yaml
+Treniranje od nule: True
+Resume trening: False
+Epohe: 50
+Velicina slike: 512
+Batch: 8
+Patience: 10
+Seed: 42
+
+Rezultati folder: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model
+Najbolji model: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model/weights/best.pt
+Poslednji model: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model/weights/last.pt
+
+Validacija:
+  mAP50: 0.3175
+  mAP50-95: 0.1925
+  Precision: 0.3345
+  Recall: 0.5800
+  F1: 0.4243
+
+Test:
+  mAP50: 0.3497
+  mAP50-95: 0.2228
+  Precision: 0.3165
+  Recall: 0.5871
+  F1: 0.4113

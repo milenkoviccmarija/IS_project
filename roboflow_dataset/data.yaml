@@ -9,6 +9,6 @@ names: ['marija', 'masa']
 roboflow:
   workspace: marijas-workspace-ppmky
   project: is-lu3sk
-  version: 7
+  version: 8
   license: CC BY 4.0
-  url: https://universe.roboflow.com/marijas-workspace-ppmky/is-lu3sk/dataset/7
+  url: https://universe.roboflow.com/marijas-workspace-ppmky/is-lu3sk/dataset/8
