@@ -5,10 +5,10 @@ Dataset: roboflow_dataset/data.yaml
 Model: yolov8n.yaml
 Treniranje od nule: True
 Resume trening: False
-Epohe: 50
+Epohe: 100
 Velicina slike: 512
 Batch: 8
-Patience: 10
+Patience: 20
 Seed: 42
 
 Rezultati folder: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model
@@ -16,15 +16,15 @@ Najbolji model: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model/w
 Poslednji model: /Users/macbookair/Desktop/IS/IS_project/runs/marija_masa_model/weights/last.pt
 
 Validacija:
-  mAP50: 0.3175
-  mAP50-95: 0.1925
-  Precision: 0.3345
-  Recall: 0.5800
-  F1: 0.4243
+  mAP50: 0.5349
+  mAP50-95: 0.3638
+  Precision: 0.4879
+  Recall: 0.6300
+  F1: 0.5499
 
 Test:
-  mAP50: 0.3497
-  mAP50-95: 0.2228
-  Precision: 0.3165
-  Recall: 0.5871
-  F1: 0.4113
+  mAP50: 0.6554
+  mAP50-95: 0.5016
+  Precision: 0.6952
+  Recall: 0.6185
+  F1: 0.6546

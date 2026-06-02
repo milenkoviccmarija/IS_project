@@ -13,14 +13,31 @@ class Config:
     train_from_scratch: bool = True
 
     # Trening
-    epochs: int = 50
+    epochs: int = 100
     imgsz: int = 512
     batch: int = 8
-    patience: int = 10
+    patience: int = 20
     seed: int = 42
     save_period: int = -1
     resume_training: bool = False
     resume_weights: str = "runs/marija_masa_model/weights/last.pt"
+
+    # Augmentacije tokom treninga
+    hsv_h: float = 0.015
+    hsv_s: float = 0.7
+    hsv_v: float = 0.4
+    degrees: float = 0.0
+    translate: float = 0.05
+    scale: float = 0.25
+    shear: float = 0.0
+    perspective: float = 0.0
+    flipud: float = 0.0
+    fliplr: float = 0.5
+    mosaic: float = 0.5
+    mixup: float = 0.0
+    cutmix: float = 0.0
+    copy_paste: float = 0.0
+    close_mosaic: int = 10
 
     # Validacija i evaluacija
     val_split: str = "val"
@@ -28,6 +45,9 @@ class Config:
     error_conf_threshold: float = 0.25
     error_iou_threshold: float = 0.5
     track_epoch_errors: bool = False
+    save_validation_comparisons: bool = True
+    save_epoch_validation_snapshots: bool = True
+    epoch_validation_snapshot_images: int | None = None
 
     # Cuvanje rezultata
     project: str = "runs"

@@ -1,4 +1,3 @@
-path: roboflow_dataset
 train: train/images
 val: valid/images
 test: test/images
@@ -9,6 +8,6 @@ names: ['marija', 'masa']
 roboflow:
   workspace: marijas-workspace-ppmky
   project: is-lu3sk
-  version: 8
+  version: 11
   license: CC BY 4.0
-  url: https://universe.roboflow.com/marijas-workspace-ppmky/is-lu3sk/dataset/8
+  url: https://universe.roboflow.com/marijas-workspace-ppmky/is-lu3sk/dataset/11

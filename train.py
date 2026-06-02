@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 
 import torch
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from config import Config
 from dataset import list_images, load_dataset_config, split_image_dir, split_label_dir
@@ -112,10 +112,12 @@ def train_yolo(config: Config, device: str):
             raise FileNotFoundError(f"Checkpoint za nastavak treninga ne postoji: {resume_path}")
 
         model = load_model(resume_path)
+        add_epoch_validation_snapshot_callback(model, config, device)
         return model.train(resume=True, device=device)
 
     model_path = config.model_yaml if config.train_from_scratch else config.pretrained_weights
     model = create_model(resolve_model_path(model_path))
+    add_epoch_validation_snapshot_callback(model, config, device)
 
     return model.train(
         data=resolve_project_path(config.data_yaml),
@@ -127,6 +129,21 @@ def train_yolo(config: Config, device: str):
         patience=config.patience,
         seed=config.seed,
         save_period=config.save_period,
+        hsv_h=config.hsv_h,
+        hsv_s=config.hsv_s,
+        hsv_v=config.hsv_v,
+        degrees=config.degrees,
+        translate=config.translate,
+        scale=config.scale,
+        shear=config.shear,
+        perspective=config.perspective,
+        flipud=config.flipud,
+        fliplr=config.fliplr,
+        mosaic=config.mosaic,
+        mixup=config.mixup,
+        cutmix=config.cutmix,
+        copy_paste=config.copy_paste,
+        close_mosaic=config.close_mosaic,
         project=resolve_project_path(config.project),
         name=config.name,
         exist_ok=config.exist_ok,
@@ -166,6 +183,209 @@ def print_detection_metrics(metrics, title: str) -> None:
 
 def print_validation_metrics(metrics) -> None:
     print_detection_metrics(metrics, "Validacija")
+
+
+def save_side_by_side_image(left_path: Path, right_path: Path, output_path: Path, left_title: str, right_title: str) -> None:
+    with Image.open(left_path) as left_image, Image.open(right_path) as right_image:
+        left = left_image.convert("RGB")
+        right = right_image.convert("RGB")
+
+        if left.size != right.size:
+            right = right.resize(left.size)
+
+        title_height = 34
+        padding = 8
+        width = left.width + right.width + padding
+        height = left.height + title_height
+        comparison = Image.new("RGB", (width, height), "white")
+        draw = ImageDraw.Draw(comparison)
+
+        draw.text((12, 10), left_title, fill="black")
+        draw.text((left.width + padding + 12, 10), right_title, fill="black")
+        comparison.paste(left, (0, title_height))
+        comparison.paste(right, (left.width + padding, title_height))
+        comparison.save(output_path, quality=95)
+
+
+def save_validation_comparisons(config: Config, save_dir: Path) -> None:
+    if not config.save_validation_comparisons:
+        return
+
+    label_images = sorted(save_dir.glob("val_batch*_labels.jpg"))
+    comparison_paths = []
+
+    for label_path in label_images:
+        pred_path = label_path.with_name(label_path.name.replace("_labels.jpg", "_pred.jpg"))
+        if not pred_path.exists():
+            continue
+
+        output_path = label_path.with_name(label_path.name.replace("_labels.jpg", "_comparison.jpg"))
+        save_side_by_side_image(label_path, pred_path, output_path, "Ground truth", "Predikcije")
+        comparison_paths.append(output_path)
+
+    if comparison_paths:
+        print("Uporedne validation slike sacuvane su:")
+        for path in comparison_paths:
+            print(f"- {path}")
+
+
+def class_color(class_id: int) -> tuple[int, int, int]:
+    colors = [
+        (220, 56, 56),
+        (45, 126, 222),
+        (48, 168, 84),
+        (230, 145, 56),
+        (140, 80, 200),
+    ]
+    return colors[class_id % len(colors)]
+
+
+def draw_labeled_box(draw: ImageDraw.ImageDraw, box: list[float], label: str, color: tuple[int, int, int]) -> None:
+    x1, y1, x2, y2 = [int(round(value)) for value in box]
+    draw.rectangle((x1, y1, x2, y2), outline=color, width=3)
+
+    text_box = draw.textbbox((x1, y1), label)
+    text_width = text_box[2] - text_box[0]
+    text_height = text_box[3] - text_box[1]
+    y_text = max(0, y1 - text_height - 6)
+    draw.rectangle((x1, y_text, x1 + text_width + 8, y_text + text_height + 6), fill=color)
+    draw.text((x1 + 4, y_text + 3), label, fill="white")
+
+
+def resize_panel(image: Image.Image, boxes: list[dict], panel_width: int) -> tuple[Image.Image, list[dict]]:
+    scale = panel_width / image.width
+    panel_height = max(1, int(round(image.height * scale)))
+    resized = image.resize((panel_width, panel_height))
+    resized_boxes = []
+
+    for item in boxes:
+        resized_boxes.append({
+            **item,
+            "box": [value * scale for value in item["box"]],
+        })
+
+    return resized, resized_boxes
+
+
+def render_detection_panel(
+    image_path: Path,
+    boxes: list[dict],
+    names,
+    title: str,
+    panel_width: int,
+) -> Image.Image:
+    with Image.open(image_path) as source_image:
+        image = source_image.convert("RGB")
+
+    image, boxes = resize_panel(image, boxes, panel_width)
+    title_height = 30
+    panel = Image.new("RGB", (image.width, image.height + title_height), "white")
+    panel.paste(image, (0, title_height))
+
+    draw = ImageDraw.Draw(panel)
+    draw.text((10, 8), title, fill="black")
+
+    for item in boxes:
+        label = class_name(item["class_id"], names)
+        if "conf" in item:
+            label = f"{label} {item['conf']:.2f}"
+
+        shifted_box = [item["box"][0], item["box"][1] + title_height, item["box"][2], item["box"][3] + title_height]
+        draw_labeled_box(draw, shifted_box, label, class_color(item["class_id"]))
+
+    return panel
+
+
+def combine_epoch_panels(rows: list[Image.Image], output_path: Path) -> None:
+    if not rows:
+        return
+
+    padding = 10
+    width = max(row.width for row in rows)
+    height = sum(row.height for row in rows) + padding * (len(rows) - 1)
+    combined = Image.new("RGB", (width, height), "white")
+    y = 0
+
+    for row in rows:
+        combined.paste(row, (0, y))
+        y += row.height + padding
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    combined.save(output_path, quality=95)
+
+
+def save_epoch_validation_snapshot(
+    config: Config,
+    weights_path: Path,
+    epoch: int,
+    save_dir: Path,
+    device: str,
+) -> None:
+    if not config.save_epoch_validation_snapshots or not weights_path.exists():
+        return
+
+    image_paths, labels_dir = validation_dataset_paths(config)
+    image_count = config.epoch_validation_snapshot_images or config.batch
+    image_paths = image_paths[:image_count]
+
+    if not image_paths:
+        return
+
+    model = load_model(weights_path)
+    results = model.predict(
+        source=[str(path) for path in image_paths],
+        imgsz=config.imgsz,
+        conf=config.error_conf_threshold,
+        device=device,
+        verbose=False,
+    )
+
+    rows = []
+    panel_width = config.imgsz
+
+    for image_path, result in zip(image_paths, results):
+        label_path = labels_dir / f"{image_path.stem}.txt"
+        with Image.open(image_path) as image:
+            image_width, image_height = image.size
+
+        gt_boxes = read_yolo_labels(label_path, image_width, image_height)
+        pred_boxes = []
+
+        if result.boxes is not None:
+            boxes = result.boxes.xyxy.cpu().tolist()
+            classes = result.boxes.cls.cpu().tolist()
+            confidences = result.boxes.conf.cpu().tolist()
+            pred_boxes = [
+                {"class_id": int(class_id), "box": box, "conf": conf}
+                for box, class_id, conf in zip(boxes, classes, confidences)
+            ]
+
+        left = render_detection_panel(image_path, gt_boxes, model.names, f"GT | {image_path.name}", panel_width)
+        right = render_detection_panel(image_path, pred_boxes, model.names, f"Pred | epoha {epoch}", panel_width)
+        row = Image.new("RGB", (left.width + right.width + 10, max(left.height, right.height)), "white")
+        row.paste(left, (0, 0))
+        row.paste(right, (left.width + 10, 0))
+        rows.append(row)
+
+    output_path = save_dir / "epoch_validation_snapshots" / f"epoch_{epoch:03d}_comparison.jpg"
+    combine_epoch_panels(rows, output_path)
+    print(f"Validation snapshot sacuvan: {output_path}")
+
+
+def add_epoch_validation_snapshot_callback(model, config: Config, device: str) -> None:
+    if not config.save_epoch_validation_snapshots:
+        return
+
+    def on_fit_epoch_end(trainer) -> None:
+        if getattr(trainer, "rank", -1) not in {-1, 0}:
+            return
+
+        epoch = int(getattr(trainer, "epoch", 0)) + 1
+        save_dir = Path(trainer.save_dir)
+        weights_path = Path(getattr(trainer, "last", save_dir / "weights" / "last.pt"))
+        save_epoch_validation_snapshot(config, weights_path, epoch, save_dir, device)
+
+    model.add_callback("on_fit_epoch_end", on_fit_epoch_end)
 
 
 def yolo_label_to_xyxy(values: list[float], image_width: int, image_height: int) -> list[float]:
@@ -459,10 +679,12 @@ def main() -> None:
 
     validation_metrics = validate_yolo(config, best_model, device)
     print_validation_metrics(validation_metrics)
+    save_validation_comparisons(config, Path(getattr(validation_metrics, "save_dir", save_dir)))
     print("Pokrecem test evaluaciju najboljeg modela...")
     test_metrics = validate_yolo(config, best_model, device, split=config.test_split, name_suffix="test")
     print_detection_metrics(test_metrics, "Test evaluacija")
     write_training_summary(config, save_dir, best_model, last_model, device, validation_metrics, test_metrics)
+    save_validation_comparisons(config, save_dir)
     find_validation_errors(config, best_model, device, save_dir)
     find_validation_errors_by_epoch(config, save_dir, device)
 

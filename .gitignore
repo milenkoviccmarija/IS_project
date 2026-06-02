@@ -5,3 +5,4 @@ venv/
 .DS_Store
 *.cache
 runs/**/weights/epoch*.pt
+runs/**/epoch_validation_snapshots/
