@@ -8,7 +8,4 @@ def create_model(model_yaml: str = "yolov8n.yaml") -> YOLO:
 
 
 def load_model(weights_path: str | Path) -> YOLO:
-    """
-    Ucitava istrenirani YOLO model iz .pt fajla.
-    """
     return YOLO(str(weights_path))

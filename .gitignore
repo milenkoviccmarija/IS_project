@@ -1,8 +1,34 @@
+# Python
 __pycache__/
 *.py[cod]
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
 .venv/
 venv/
+
+# macOS / editor files
 .DS_Store
-*.cache
-runs/**/weights/epoch*.pt
-runs/**/epoch_validation_snapshots/
+.idea/
+.vscode/
+
+# Dataset and generated reports stay local.
+roboflow_dataset/
+reports/
+outputs/
+
+# YOLO training/evaluation outputs stay local.
+runs/**
+
+# Keep only best weights from run folders.
+!runs/
+!runs/**/
+!runs/**/weights/
+!runs/**/weights/best.pt
+
+# Ignore all other model checkpoints/weights.
+*.pt
+!runs/**/weights/best.pt

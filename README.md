@@ -20,7 +20,7 @@ Evaluacija:
 uv run python evaluate.py
 ```
 
-Statistika dataseta:
+Statistika dataseta i dataset quality report:
 
 ```bash
 uv run python dataset.py
@@ -36,7 +36,8 @@ IS_project/
 ├── train.py               ← trening + validacija
 ├── evaluate.py            ← evaluacija i grafici
 ├── roboflow_dataset/      ← YOLO dataset
-├── runs/                  ← rezultati treninga
+├── reports/               ← statistika i grafici dataseta
+├── runs/                  ← rezultati treninga i evaluacije
 ├── pyproject.toml
 └── README.md
 ```
@@ -54,18 +55,32 @@ test: test/images
 
 nc: 2
 names: ['marija', 'masa']
+
+roboflow:
+  version: 17
 ```
 
 Trenutna podela dataseta:
 
 | Skup | Slike | Label fajlovi | Objekti |
 | --- | ---: | ---: | ---: |
-| Train | 242 | 242 | 266 |
-| Validation | 49 | 49 | 50 |
-| Test | 38 | 38 | 43 |
+| Train | 378 | 378 | 415 |
+| Validation | 69 | 69 | 70 |
+| Test | 75 | 75 | 80 |
 
-Raspodela klasa je priblizno balansirana. U trening skupu ima 134 objekta
-klase `marija` i 132 objekta klase `masa`.
+Raspodela klasa je balansirana. U trening skupu ima 208 objekata klase
+`marija` i 207 objekata klase `masa`. U validation skupu ima 35/35 objekata,
+a u test skupu 40/40 objekata po klasama.
+
+Dataset quality grafici cuvaju se u:
+
+```text
+reports/dataset_quality/
+```
+
+Najvazniji uvid iz dataset reporta je da ima dosta malih bounding box-eva.
+Medijana povrsine bbox-a je 3.98% slike za train, 6.93% za validation i
+5.98% za test.
 
 Pravila anotacije:
 
@@ -87,12 +102,14 @@ Trenutno se koristi:
 ```python
 model_yaml = "yolov8n.yaml"
 train_from_scratch = True
-epochs = 50
-imgsz = 512
+epochs = 200
+imgsz = 640
 batch = 8
+patience = 40
 ```
 
-Model je treniran od nule, bez pretrained tezina.
+Model je treniran od nule, bez pretrained tezina. Velicina slike je povecana
+na 640 zbog malih objekata u datasetu.
 
 ## Evaluacija
 
@@ -108,12 +125,30 @@ Dobijeni rezultati:
 
 | Skup | mAP50 | mAP50-95 | Precision | Recall | F1 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Validation | 0.3175 | 0.1925 | 0.3345 | 0.5800 | 0.4243 |
-| Test | 0.3497 | 0.2228 | 0.3165 | 0.5871 | 0.4113 |
+| Validation | 0.8385 | 0.5843 | 0.7849 | 0.8143 | 0.7993 |
+| Test | 0.8860 | 0.6200 | 0.8701 | 0.8603 | 0.8652 |
 
-Model uspeva da pronadje deo objekata, ali jos pravi greske u klasifikaciji i
-ima visak detekcija. To je ocekivano za YOLO model treniran od nule nad
-relativno malim datasetom.
+Rezultati na test skupu po klasama:
+
+| Klasa | Precision | Recall | mAP50 | mAP50-95 |
+| --- | ---: | ---: | ---: | ---: |
+| marija | 0.888 | 0.796 | 0.842 | 0.608 |
+| masa | 0.852 | 0.925 | 0.930 | 0.632 |
+
+Model dobro detektuje obe klase. Klasa `masa` ima veci recall, dok klasa
+`marija` ima veci precision. Najcesce greske su visak detekcija, pogresna
+klasa na manjem broju slika i poneki promasen objekat.
+
+Na validation skupu je u `validation_errors.txt` pronadjeno 49 prijavljenih
+gresaka na 34 slike:
+
+- 35 visak detekcija
+- 5 pogresnih klasa
+- 9 promasenih objekata
+
+F1-confidence kriva pokazuje da je najbolji prag pouzdanosti oko 0.59. Zato
+je za predikcije prakticnije koristiti `conf` oko 0.55-0.60, umesto vrlo
+niskog praga 0.25 koji se koristi za detaljniju analizu gresaka.
 
 Rezultati treninga i najbolji model cuvaju se u:
 
@@ -128,6 +163,9 @@ Najvazniji fajlovi za pregled:
 - `runs/marija_masa_model/training_summary.txt`
 - `runs/marija_masa_model/validation_errors.txt`
 - `runs/marija_masa_model/weights/best.pt`
+- `runs/marija_masa_model_validation/`
+- `runs/marija_masa_model_test/`
+- `runs/marija_masa_model_evaluation/`
 
 ## Izvori
 
